@@ -18,16 +18,21 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser())
+const allowedOrigins = [
+  "http://localhost:5174",
+  "https://educart-k573.onrender.com"
+];
+
 app.use(cors({
-    origin:[
-        "http://localhost:5174",
-        "https://educart-k573.onrender.com"
-    ]
-    credentials:true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
 }));
-app.get("/",(req,res)=>{
-    res.send("API running");
-});
 
 
 app.use("/api/products",productRoutes)
